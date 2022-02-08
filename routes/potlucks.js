@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const nodemailer = require("nodemailer");
+
+const dotenv = require("dotenv");
+dotenv.config();
 
 const Potluck = require("../models/potluck");
 const Dish = require("../models/dish");
@@ -46,12 +50,11 @@ router.post("/create", async function (req, res, next) {
 });
 
 router.post("/dishes", async function (req, res, next) {
-  const { name, description, potluck_id, attendee } = req.body;
-  console.log(req.body);
+  const { name, description, category, potluck_id, attendee } = req.body;
   try {
     const duplicateDish = await Dish.findOne({ name, potluck_id });
-    console.log(duplicateDish);
     if (duplicateDish) {
+      console.log("Dish already exists");
       return res.status(400).send({
         message: "Someone is already bring this dish",
       });
@@ -70,6 +73,7 @@ router.post("/dishes", async function (req, res, next) {
       potluck_id,
       attendee,
       description,
+      category,
     });
     return res.json(newDish);
   } catch (err) {
@@ -124,5 +128,55 @@ router.delete("/dishes/:id", async function (req, res, next) {
     });
   }
 });
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+router.post("/share", async function (req, res) {
+  const { sender_name, recipient_email, potluckId } = req.body;
+  console.log(req.body);
+  try {
+    const potluck = await Potluck.findById(potluckId);
+    if (!potluck) return res.status(404).send({ message: "Potluck not found" });
+    sendEmail(sender_name, recipient_email, potluck);
+    return res.send({ message: "Email sent" });
+  } catch (err) {
+    return res.status(400).send({ message: "Potluck not found", error: err });
+  }
+});
+
+async function sendEmail(sender_name, recipient_email, potluck) {
+  console.log(recipient_email);
+  try {
+    const info = await transporter.sendMail({
+      from: `Potlucky <${process.env.EMAIL}>`,
+      to: recipient_email,
+      subject: `${sender_name} has invited you to a potluck!`,
+      html: getEmailBody(sender_name, recipient_email, potluck),
+    });
+    console.log("Message sent: %s", info.messageId);
+    return { message: "Message sent" };
+  } catch (err) {
+    console.log("Message not sent", err);
+    return { message: "Message not sent", error: err };
+  }
+}
+
+function getEmailBody(sender_name, recipient_email, potluck) {
+  return `Party! ${sender_name} has invited you to a potluck on ${new Date(
+    potluck.date
+  ).toLocaleString()}.
+  Check it out <a href="http://localhost:3000/potlucks/${
+    potluck._id
+  }">here on Potlucky</a>, to see
+  what guests are bringing what dishes.`;
+}
 
 module.exports = router;
