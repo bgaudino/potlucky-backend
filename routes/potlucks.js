@@ -13,18 +13,18 @@ router.get("/:id", async function (req, res, next) {
     const potluck = await Potluck.findById(id);
     if (!potluck) {
       return res.status(404).send({
-        message: "Potluck not found",
+        message: "Potluck not found"
       });
     }
     const dishes = await Dish.find({ potluck_id: id });
     return res.send({
       potluck,
-      dishes,
+      dishes
     });
   } catch (err) {
     return res.send({
       message: "Potluck not found",
-      error: err,
+      error: err
     });
   }
 });
@@ -37,13 +37,13 @@ router.post("/create", async function (req, res, next) {
       description,
       date,
       location,
-      host,
+      host
     });
     return res.json(newPotluck);
   } catch (err) {
     return res.status(400).send({
       message: "Potluck not created",
-      error: err,
+      error: err
     });
   }
 });
@@ -55,14 +55,14 @@ router.post("/dishes", async function (req, res, next) {
     if (duplicateDish) {
       console.log("Dish already exists");
       return res.status(400).send({
-        message: "Someone is already bring this dish",
+        message: "Someone is already bring this dish"
       });
     }
   } catch (err) {
     console.log(err);
     return res.status(400).send({
       message: "Potluck not created",
-      error: err,
+      error: err
     });
   }
 
@@ -72,26 +72,26 @@ router.post("/dishes", async function (req, res, next) {
       potluck_id,
       attendee,
       description,
-      category,
+      category
     });
     return res.json(newDish);
   } catch (err) {
     console.log(err);
     return res.status(400).send({
       message: "Dish not created",
-      error: err,
+      error: err
     });
   }
 });
 
 router.put("/dishes/:id", async function (req, res, next) {
   const { id } = req.params;
-  const { name, description, potluck_id, attendee } = req.body;
+  const { name, description, potluck_id, attendee, category } = req.body;
   try {
     const dish = await Dish.findById(id);
     if (!dish) {
       return res.status(404).send({
-        message: "Dish not found",
+        message: "Dish not found"
       });
     }
     const updatedDish = await Dish.findByIdAndUpdate(id, {
@@ -99,12 +99,14 @@ router.put("/dishes/:id", async function (req, res, next) {
       potluck_id,
       attendee,
       description,
+      category
     });
-    return res.json(updatedDish);
+    const newData = await Dish.findById(id);
+    return res.json(newData);
   } catch (err) {
     return res.status(400).send({
       message: "Dish not updated",
-      error: err,
+      error: err
     });
   }
 });
@@ -115,7 +117,7 @@ router.delete("/dishes/:id", async function (req, res, next) {
     const dish = await Dish.findById(id);
     if (!dish) {
       return res.status(404).send({
-        message: "Dish not found",
+        message: "Dish not found"
       });
     }
     const deletedDish = await Dish.findByIdAndDelete(id);
@@ -123,7 +125,7 @@ router.delete("/dishes/:id", async function (req, res, next) {
   } catch (err) {
     return res.status(400).send({
       message: "Dish not deleted",
-      error: err,
+      error: err
     });
   }
 });
