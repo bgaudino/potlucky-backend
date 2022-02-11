@@ -49,7 +49,19 @@ router.post("/create", async function (req, res, next) {
 });
 
 router.post("/dishes", async function (req, res, next) {
-  const { name, description, category, potluck_id, attendee } = req.body;
+  const {
+    name,
+    description,
+    category,
+    potluck_id,
+    attendee,
+    isVegetarian,
+    isVegan,
+    isDairyFree,
+    isGlutenFree,
+    isKosher,
+    isHalal
+  } = req.body;
   try {
     const duplicateDish = await Dish.findOne({ name, potluck_id });
     if (duplicateDish) {
@@ -72,7 +84,13 @@ router.post("/dishes", async function (req, res, next) {
       potluck_id,
       attendee,
       description,
-      category
+      category,
+      isVegetarian,
+      isVegan,
+      isDairyFree,
+      isGlutenFree,
+      isKosher,
+      isHalal
     });
     return res.json(newDish);
   } catch (err) {
@@ -86,7 +104,19 @@ router.post("/dishes", async function (req, res, next) {
 
 router.put("/dishes/:id", async function (req, res, next) {
   const { id } = req.params;
-  const { name, description, potluck_id, attendee, category } = req.body;
+  const {
+    name,
+    description,
+    potluck_id,
+    attendee,
+    category,
+    isVegetarian,
+    isVegan,
+    isDairyFree,
+    isGlutenFree,
+    isHalal,
+    isKosher
+  } = req.body;
   try {
     const dish = await Dish.findById(id);
     if (!dish) {
@@ -99,7 +129,13 @@ router.put("/dishes/:id", async function (req, res, next) {
       potluck_id,
       attendee,
       description,
-      category
+      category,
+      isVegetarian,
+      isVegan,
+      isDairyFree,
+      isGlutenFree,
+      isHalal,
+      isKosher
     });
     const newData = await Dish.findById(id);
     return res.json(newData);

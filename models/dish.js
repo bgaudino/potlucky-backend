@@ -6,31 +6,55 @@ const dishScheme = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: true
     },
     description: {
-      type: String,
+      type: String
     },
     potluck_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Potluck",
-      required: true,
+      required: true
     },
     attendee: {
       name: {
         type: String,
-        required: true,
+        required: true
       },
       email: {
-        type: String,
-      },
+        type: String
+      }
     },
     category: {
-      type: String,
+      type: String
     },
+    isVegetarian: {
+      type: Boolean,
+      default: false
+    },
+    isVegan: {
+      type: Boolean,
+      default: false
+    },
+    isGlutenFree: {
+      type: Boolean,
+      default: false
+    },
+    isDairyFree: {
+      type: Boolean,
+      default: false
+    },
+    isKosher: {
+      type: Boolean,
+      default: false
+    },
+    isHalal: {
+      type: Boolean,
+      default: false
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
