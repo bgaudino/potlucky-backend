@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const getEmailBody = require("../utils/email");
 
 const Potluck = require("../models/potluck");
+const { Unsubscribe } = require("../models/user");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -21,8 +22,8 @@ router.post("/", async function (req, res) {
   try {
     const potluck = await Potluck.findById(potluckId);
     if (!potluck) return res.status(404).send({ message: "Potluck not found" });
-    sendEmail(sender_name, recipient_email, potluck);
-    return res.send({ message: "Email sent" });
+    const response = await sendEmail(sender_name, recipient_email, potluck);
+    return res.send(response);
   } catch (err) {
     console.log(err);
     return res.status(400).send({ message: "Potluck not found", error: err });
@@ -30,8 +31,11 @@ router.post("/", async function (req, res) {
 });
 
 async function sendEmail(sender_name, recipient_email, potluck) {
-  console.log(recipient_email);
   try {
+    const unsubscribed = await Unsubscribe.find({ email: recipient_email });
+    if (unsubscribed && unsubscribed.length > 0) {
+      return { message: "Email is unsubscribed" };
+    }
     const info = await transporter.sendMail({
       from: `Potlucky <${process.env.EMAIL}>`,
       to: recipient_email,

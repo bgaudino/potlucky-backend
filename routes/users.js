@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const User = require("../models/user");
+const { User, Unsubscribe } = require("../models/user");
 
 /* GET users listing. */
 router.get("/", async function (req, res, next) {
@@ -14,9 +14,27 @@ router.post("/", async function (req, res) {
   const newUser = await User.create({
     firstName,
     lastName,
-    email,
+    email
   });
   res.send(newUser);
+});
+
+router.get("/unsubscribe", async function (req, res) {
+  const { email } = req.query;
+  try {
+    const alreadyUnsubscribed = await Unsubscribe.find({ email });
+    console.log(alreadyUnsubscribed);
+    if (!alreadyUnsubscribed || alreadyUnsubscribed.length === 0) {
+      const newUnsubscribe = await Unsubscribe.create({
+        email
+      });
+      console.log(newUnsubscribe);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.send("You have been unsubscribed");
 });
 
 router.put("/:id", async function (req, res) {
@@ -25,7 +43,7 @@ router.put("/:id", async function (req, res) {
   const updatedUser = await User.findByIdAndUpdate(id, {
     firstName,
     lastName,
-    email,
+    email
   });
   res.send({ message: "User successfully updated", updatedUser });
 });

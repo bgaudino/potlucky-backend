@@ -2,6 +2,7 @@ const env = require("dotenv");
 env.config();
 
 const frontendUrl = process.env.FRONTEND_URL;
+const backendUrl = process.env.BACKEND_URL;
 
 function getEmailBody(sender_name, recipient_email, potluck) {
   return `<!doctype html>
@@ -162,7 +163,7 @@ function getEmailBody(sender_name, recipient_email, potluck) {
                   <tr>
                     <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #999999; font-size: 12px; text-align: center;" valign="top" align="center">
                       <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">Potlucky</span>
-                      <br> Don't like these emails? <a href="http://i.imgur.com/CScmqnj.gif" style="text-decoration: underline; color: #999999; font-size: 12px; text-align: center;">Unsubscribe</a>.
+                      <br> Don't like these emails? <a href="${backendUrl}/users/unsubscribe?email=${recipient_email}" style="text-decoration: underline; color: #999999; font-size: 12px; text-align: center;">Unsubscribe</a>.
                     </td>
                   </tr>
                   <tr>

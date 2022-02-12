@@ -1,24 +1,42 @@
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-  firstName: {
-    type: String,
+const userSchema = new Schema(
+  {
+    firstName: {
+      type: String
+    },
+    lastName: {
+      type: String
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    }
   },
-  lastName: {
-    type: String,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-}, {
-  timestamps: true,
-});
+  {
+    timestamps: true
+  }
+);
 
-const User = mongoose.model('User', userSchema);
+const unSubscribeSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: true
+    }
+  },
+  {
+    timestamps: true
+  }
+);
 
-module.exports = User;
+const Unsubscribe = mongoose.model("Unsubscribe", unSubscribeSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = {
+  User,
+  Unsubscribe
+};
